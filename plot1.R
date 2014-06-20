@@ -1,3 +1,4 @@
+## check if data exists, else download and unzip
 if(!file.exists("./data/summarySCC_PM25.rds")){
         if(!file.exists("./data")){dir.create("data")}
         
@@ -7,14 +8,14 @@ if(!file.exists("./data/summarySCC_PM25.rds")){
         unlink("./data/PM25.zip"); 
 }
 
-if(!exists("PM25EmissionData")){
-        PM25EmissionData <- readRDS("./data/summarySCC_PM25.rds")
-}
 
-totalEmmisionPerYear <- tapply(PM25EmissionData$Emissions, PM25EmissionData$year,sum)
+PM25EmissionData <- readRDS("./data/summarySCC_PM25.rds") ## read in data
 
-if(!file.exists("./figures")){dir.create("figures")}
+totalEmmisionPerYear <- tapply(PM25EmissionData$Emissions, PM25EmissionData$year,sum) ## sum emission over year
 
+if(!file.exists("./figures")){dir.create("figures")} ## create figure dir, if !exist
+
+## save barplot png
 png("./figures/plot1.png")
 barplot(totalEmmisionPerYear/1000000,ylab="PM2.5 emission (in million ton)",xlab="year",
         main="Total Emission of PM2.5 over the years USA", col = "red",ylim=c(0,8))

@@ -7,18 +7,17 @@ if(!file.exists("./data/summarySCC_PM25.rds")){
         unlink("./data/PM25.zip"); 
 }
 
-if(!(exists("PM25EmissionData") & exists("mapping"))){
-        PM25EmissionData <- readRDS("./data/summarySCC_PM25.rds")
-        mapping <- readRDS("./data/Source_Classification_Code.rds")
-}
 
+PM25EmissionData <- readRDS("./data/summarySCC_PM25.rds") ## read in data
+mapping <- readRDS("./data/Source_Classification_Code.rds") ## read in data
 
-SCCCoalComb <-  as.character(mapping$SCC[grepl("Comb.*Coal",mapping$EI.Sector)])
-CoalCombIndex <- PM25EmissionData$SCC %in% SCCCoalComb
-PM25CoalComb <- PM25EmissionData[CoalCombIndex,]
+SCCCoalComb <-  as.character(mapping$SCC[grepl("Comb.*Coal",mapping$EI.Sector)]) ## find all SCC-values for coal combustion related sources
+CoalCombIndex <- PM25EmissionData$SCC %in% SCCCoalComb ## find indices of the SCC-values in the emission data
+PM25CoalComb <- PM25EmissionData[CoalCombIndex,] ## subset all the coalcombustion related sources in the data
 
-totalCoalCombPerYear <- tapply(PM25CoalComb$Emissions, PM25CoalComb$year,sum)
+totalCoalCombPerYear <- tapply(PM25CoalComb$Emissions, PM25CoalComb$year,sum) ## sum over the years
 
+## save barplot png
 png("./figures/plot4.png")
 barplot(totalCoalCombPerYear/1000000,ylab="PM2.5 emission (in million tons)",xlab="year", ylim = c(0,0.6),
         main="Coal Combustion PM2.5 emission in the USA over the years", col = "red")

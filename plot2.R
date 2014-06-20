@@ -7,12 +7,12 @@ if(!file.exists("./data/summarySCC_PM25.rds")){
         unlink("./data/PM25.zip"); 
 }
 
-if(!exists("PM25EmissionData")){
-        PM25EmissionData <- readRDS("./data/summarySCC_PM25.rds")
-}
+PM25EmissionData <- readRDS("./data/summarySCC_PM25.rds") ## read in data
 
-totalEmmisionBaltimore <- tapply(PM25EmissionData$Emissions[PM25EmissionData$fips==24510], PM25EmissionData$year[PM25EmissionData$fips==24510],sum)
+totalEmmisionBaltimore <- tapply(PM25EmissionData$Emissions[PM25EmissionData$fips==24510], 
+                                 PM25EmissionData$year[PM25EmissionData$fips==24510],sum) ## sum emission over years only from Baltimore
 
+## save barplot png
 png("./figures/plot2.png")
 barplot(totalEmmisionBaltimore/1000,ylab="PM2.5 emission (in thousand ton)",xlab="year",
         main="Baltimore PM2.5 emissions over the years", col = "red")

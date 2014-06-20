@@ -7,24 +7,28 @@ if(!file.exists("./data/summarySCC_PM25.rds")){
         unlink("./data/PM25.zip"); 
 }
 
-if(!(exists("PM25EmissionData") & exists("mapping"))){
-        PM25EmissionData <- readRDS("./data/summarySCC_PM25.rds")
-        mapping <- readRDS("./data/Source_Classification_Code.rds")
-}
+PM25EmissionData <- readRDS("./data/summarySCC_PM25.rds") ## read in data
+mapping <- readRDS("./data/Source_Classification_Code.rds") ## read in data
 
-SCCVehicles <-  as.character(mapping$SCC[grepl("Vehicles",mapping$EI.Sector)])
-VehiclesIndex <- PM25EmissionData$SCC %in% SCCVehicles
-PM25Vehicles <- PM25EmissionData[VehiclesIndex,]
 
-baltAndLAVehicles <- PM25Vehicles[(PM25Vehicles$fips=="24510"|PM25Vehicles$fips=="06037"),]
-baltAndLAVehicles$fips <- factor(baltAndLAVehicles$fips, labels=c("Los Angeles","Baltimore"))
+SCCVehicles <-  as.character(mapping$SCC[grepl("Vehicles",mapping$EI.Sector)]) ## find all SCC-values for vehicle related sources
+VehiclesIndex <- PM25EmissionData$SCC %in% SCCVehicles ## find indices of the SCC-values in the emission data
+PM25Vehicles <- PM25EmissionData[VehiclesIndex,] ## subset all the vehicles related sources in the data
+
+baltAndLAVehicles <- PM25Vehicles[(PM25Vehicles$fips=="24510"|PM25Vehicles$fips=="06037"),] ## subset data to only consist of data from Baltimore and Los Angeles
+
+baltAndLAVehicles$fips <- factor(baltAndLAVehicles$fips, labels=c("Los Angeles","Baltimore")) ## set year and fips as factor with correct labels
 baltAndLAVehicles$year <- factor(baltAndLAVehicles$year)
 
 require(ggplot2)
-g <- ggplot(baltAndLAVehicles,aes(x = year, y = Emissions))
+require(grid)
 
+g <- ggplot(baltAndLAVehicles,aes(x = year, y = Emissions)) ## setup ggplot with correct aesthetics
 
+## save png ggplot barplot with different plots for the different cities (fips)
 png("./figures/plot6.png")
 g + geom_bar(stat = "identity") + facet_grid(.~fips) + ggtitle("Trend of vehicle PM2.5 emission in Baltimore and Los Angeles") +
-        theme(plot.title = element_text(face="bold"))
+        theme(plot.title = element_text(face="bold",vjust=2)) + 
+        theme(plot.margin = unit(c(1,1,1,0),"cm")) +
+        ylab("PM2.5 Emission (in tons)")
 dev.off()

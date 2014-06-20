@@ -7,17 +7,17 @@ if(!file.exists("./data/summarySCC_PM25.rds")){
         unlink("./data/PM25.zip"); 
 }
 
-if(!(exists("PM25EmissionData") & exists("mapping"))){
-        PM25EmissionData <- readRDS("./data/summarySCC_PM25.rds")
-        mapping <- readRDS("./data/Source_Classification_Code.rds")
-}
+PM25EmissionData <- readRDS("./data/summarySCC_PM25.rds") ## read in data
+mapping <- readRDS("./data/Source_Classification_Code.rds") ## read in data
 
-SCCVehicles <-  as.character(mapping$SCC[grepl("Vehicles",mapping$EI.Sector)])
-VehiclesIndex <- PM25EmissionData$SCC %in% SCCVehicles
-PM25Vehicles <- PM25EmissionData[VehiclesIndex,]
+SCCVehicles <-  as.character(mapping$SCC[grepl("Vehicles",mapping$EI.Sector)]) ## find all SCC-values for vehicle related sources
+VehiclesIndex <- PM25EmissionData$SCC %in% SCCVehicles ## find indices of the SCC-values in the emission data
+PM25Vehicles <- PM25EmissionData[VehiclesIndex,] ## subset all the vehicles related sources in the data
 
-totalVehiclesBalt <- tapply(PM25Vehicles$Emissions[PM25Vehicles$fips==24510], PM25Vehicles$year[PM25Vehicles$fips==24510],sum)
+totalVehiclesBalt <- tapply(PM25Vehicles$Emissions[PM25Vehicles$fips==24510], 
+                            PM25Vehicles$year[PM25Vehicles$fips==24510],sum) ## sum over the years only for Baltimore
 
+## save barplot png
 png("./figures/plot5.png")
 barplot(totalVehiclesBalt,ylab="PM2.5 emission (in tons)",xlab="year", ylim = c(0,350),
         main="Vehicle PM2.5 emission in Baltimore over the years", col = "red")
