@@ -1,3 +1,4 @@
+## check if data exists, else download and unzip
 if(!file.exists("./data/summarySCC_PM25.rds")){
         if(!file.exists("./data")){dir.create("data")}
         
