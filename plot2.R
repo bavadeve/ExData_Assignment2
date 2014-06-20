@@ -1,0 +1,19 @@
+if(!file.exists("./data/summarySCC_PM25.rds")){
+        if(!file.exists("./data")){dir.create("data")}
+        
+        fileUrl <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip"
+        download.file(fileUrl, destfile = "./data/PM25.zip")
+        unzip("./data/PM25.zip",exdir="./data")
+        unlink("./data/PM25.zip"); 
+}
+
+if(!exists("PM25EmissionData")){
+        PM25EmissionData <- readRDS("./data/summarySCC_PM25.rds")
+}
+
+totalEmmisionBaltimore <- tapply(PM25EmissionData$Emissions[PM25EmissionData$fips==24510], PM25EmissionData$year[PM25EmissionData$fips==24510],sum)
+
+png("./figures/plot2.png")
+barplot(totalEmmisionBaltimore/1000,ylab="PM2.5 emission (in thousand ton)",xlab="year",
+        main="Baltimore PM2.5 emissions over the years", col = "red")
+dev.off()
