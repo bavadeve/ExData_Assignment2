@@ -20,5 +20,5 @@ totalVehiclesBalt <- tapply(PM25Vehicles$Emissions[PM25Vehicles$fips==24510], PM
 
 png("./figures/plot5.png")
 barplot(totalVehiclesBalt,ylab="PM2.5 emission (in tons)",xlab="year", ylim = c(0,350),
-        main="Vehicle PM2.5 emission in the USA over the years", col = "red")
+        main="Vehicle PM2.5 emission in Baltimore over the years", col = "red")
 dev.off()
